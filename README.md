@@ -12,7 +12,7 @@ System-wide installation..
 
 Using a virtual environment..
 	
-	sudo apt-get install python3-venv
+	sudo apt-get install python3-venv #If you do not have one.
 	git clone https://github.com/koonimaru/easy_heatmapper.git
 	cd easy_heatmapper
 	python3 -m venv ./
@@ -40,7 +40,7 @@ yLabels: M array. The labels/names of data X by row.
 
 save: a saving directory with a prefix, e.g., "/home/foo/test". Default is a current directory. If you set as "", no files will be saved.
 
-WRITE_CLUSTER: True or False. Choose if cluster information is output ot not. Default=True.
+WRITE_CLUSTER: True or False. Choose if cluster information is output or not. Default=True.
 
 methods: "", "tsne", "umap", "pca". Dimension reduction methods to apply before hierarchical clustering.
 

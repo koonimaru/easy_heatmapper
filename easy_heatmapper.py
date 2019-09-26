@@ -197,7 +197,7 @@ def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CL
     sizes, colors, labels = zip(*sorted(zip(sizes, colors, labels), reverse=True))
     print("drawing heatmap")
     im = axmatrix.imshow(X2, aspect='auto', origin='lower', cmap='YlGnBu')
-    if len(xLabels)<=10:
+    if len(xLabels)<=50:
         axmatrix.set_xticks(range(len(xLabels)))
         axmatrix.set_xticklabels(xLabels, rotation=90)
     else:
@@ -205,8 +205,12 @@ def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CL
         axmatrix.set_xticklabels([])
     
     axmatrix.yaxis.tick_right()
-    axmatrix.set_yticks([])
-    axmatrix.set_yticklabels([])
+    if len(xLabels)<=50:
+        axmatrix.set_yticks(range(len(yLabels)))
+        axmatrix.set_yticklabels(yLabels)
+    else:
+        axmatrix.set_yticks([])
+        axmatrix.set_yticklabels([])
     #for label in axmatrix.get_yticklabels():
         #label.set_fontname('Arial')
         #label.set_fontsize(6)
