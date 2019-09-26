@@ -10,7 +10,7 @@ System-wide installation..
 	cd easy_heatmapper
 	sudo pip3 install .
 
-Using virtual environment..
+Using a virtual environment..
 	
 	sudo apt-get install python3-venv
 	git clone https://github.com/koonimaru/easy_heatmapper.git
@@ -33,6 +33,7 @@ Usage
 easy_heatmapper.heatmapper(X, xLabels=[],yLabels=[], save=, WRITE_CLUSTER=True, methods="tsne",CPU=, cluster_both=True, SHOW=True)
 
 X: M x N array.
+
 xLabels: N array. The labels/names of data X by column.
 
 yLabels: M array. The labels/names of data X by row.

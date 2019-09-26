@@ -16,7 +16,7 @@ def hex_to_rgb(_hex):
     hlen = len(_hex)
     #print(_hex)
     return tuple(int(_hex[i:i+hlen//3], 16) for i in range(0, hlen, hlen//3))
-def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CLUSTER=True, methods="tsne",CPU=os.cpu_count()//2, cluster_both=False, SHOW=True):
+def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CLUSTER=True, methods="tsne",CPU=os.cpu_count()//2, cluster_both=True, SHOW=True):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
