@@ -16,7 +16,13 @@ def hex_to_rgb(_hex):
     hlen = len(_hex)
     #print(_hex)
     return tuple(int(_hex[i:i+hlen//3], 16) for i in range(0, hlen, hlen//3))
-def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CLUSTER=True, methods="tsne",CPU=os.cpu_count()//2, cluster_both=True, SHOW=True):
+def heatmapper(X, xLabels=[],yLabels=[], 
+               save= os.getcwd()+os.path.sep, 
+               WRITE_CLUSTER=True, methods="tsne",
+               CPU=os.cpu_count()//2, 
+               cluster_both=True, 
+               SHOW=True,
+               COLOR='YlGnBu'):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
@@ -196,7 +202,7 @@ def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CL
         
     sizes, colors, labels = zip(*sorted(zip(sizes, colors, labels), reverse=True))
     print("drawing heatmap")
-    im = axmatrix.imshow(X2, aspect='auto', origin='lower', cmap='YlGnBu')
+    im = axmatrix.imshow(X2, aspect='auto', origin='lower', cmap=COLOR)
     if len(xLabels)<=50:
         axmatrix.set_xticks(range(len(xLabels)))
         axmatrix.set_xticklabels(xLabels, rotation=90)
@@ -205,7 +211,7 @@ def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CL
         axmatrix.set_xticklabels([])
     
     axmatrix.yaxis.tick_right()
-    if len(xLabels)<=50:
+    if len(yLabels)<=50:
         axmatrix.set_yticks(range(len(yLabels)))
         axmatrix.set_yticklabels(yLabels)
     else:
@@ -227,5 +233,7 @@ def heatmapper(X, xLabels=[],yLabels=[], save= os.getcwd()+os.path.sep, WRITE_CL
     if SHOW==True:
         plt.show()
 if __name__=="__main__":
-    b=np.random.randint(2, size=(20,30))
+    b=np.random.normal(0,1, size=(25,25))
+    for i in range(10):
+        b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
     heatmapper(b)
