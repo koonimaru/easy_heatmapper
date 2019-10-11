@@ -18,7 +18,7 @@ def hex_to_rgb(_hex):
     return tuple(int(_hex[i:i+hlen//3], 16) for i in range(0, hlen, hlen//3))
 def heatmapper(X, xLabels=[],yLabels=[], 
                save= os.getcwd()+os.path.sep, 
-               WRITE_CLUSTER=True, methods="tsne",
+               WRITE_CLUSTER=True, methods="pca",
                CPU=os.cpu_count()//2, 
                cluster_both=True, 
                SHOW=True,
@@ -344,9 +344,10 @@ if __name__=="__main__":
     b=np.random.normal(0,1, size=(25,25))
     for i in range(10):
         b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
+    b[:]+=np.arange(25)/5.0
     np.random.shuffle(b)
     
-    heatmapper(b)
+    scatter(b)
     
     
     
