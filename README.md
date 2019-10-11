@@ -50,13 +50,31 @@ cluster_both: If True, cluster both x and y axis of data.
 
 SHOW: If True, show a heatmap in runtime.
 
+
+
 Example
 -------
 
 ~~~python
 import easy_heatmapper as eh
 import numpy as np
-
-b=np.random.randint(2, size=(20,30))
+b=np.random.normal(0,1, size=(25,25))
+    for i in range(10):
+        b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
+    np.random.shuffle(b)
 eh.heatmapper(b)
 ~~~
+
+![heatmap](heatmapper.png)
+
+~~~python
+import easy_heatmapper as eh
+import numpy as np
+b=np.random.normal(0,1, size=(25,25))
+    for i in range(10):
+        b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
+    np.random.shuffle(b)
+eh.scatter(b)
+~~~
+
+![scatter](tsne_with_color.png)
