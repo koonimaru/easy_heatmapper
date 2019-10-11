@@ -232,8 +232,123 @@ def heatmapper(X, xLabels=[],yLabels=[],
         fig2.savefig(save+"_pie.pdf", format="pdf")
     if SHOW==True:
         plt.show()
+
+def scatter(X, xLabels=[],yLabels=[], 
+               save= os.getcwd()+os.path.sep, 
+               WRITE_CLUSTER=True, methods="tsne",
+               CPU=os.cpu_count()//2, 
+               SHOW=True,
+               COLOR='YlGnBu'):
+    """  
+    X: M x N array.
+    xLabels: N array. The labels or names of data X by column.  
+    yLabels: M array. The labels or names of data X by row.
+    save: a saving directory with a prefix
+    WRITE_CLUSTER: True or False. choose if cluster information is output ot not.
+    methods: "", "tsne", "umap", "pca". Dimension reduction methods to apply before hierarchical clustering.
+    CPU: CPU number to use. It has effect only when tsne methods is used.
+    """
+    
+    Xshape=np.shape(X)
+    
+    
+    
+    if WRITE_CLUSTER:
+        if len(yLabels)==0:
+            print("Warning: y label names are automatically set as serial numbers. Provide yLabels option so that label names make sense.")
+            
+            yLabels=list(map(str, range(Xshape[0])))
+           
+    save=save+"_"+methods
+    # Compute and plot first dendrogram.
+    print("reducing X axis dimension with "+methods)
+    if methods=="umap":
+        embeddingX = umap.UMAP(n_neighbors=5,  min_dist=0.1, metric='euclidean', n_components=2).fit_transform(X)
+    elif methods=="pca":
+        embeddingX = PCA(n_components=2).fit_transform(X)
+    elif methods=="tsne":
+        if CPU==0:
+            CPU=1
+        tsne = TSNE(n_jobs=CPU,perplexity = 40.000000,  n_iter=5000)
+        embeddingX = tsne.fit_transform(X)
+ 
+    fig, ax  = plt.subplots(figsize=(8,8))
+    print("calculating Y axis linkage")
+    Y = fcl.linkage(embeddingX, method='ward', metric='euclidean')
+    cmap = cm.nipy_spectral(np.linspace(0, 1, 18))
+    sch.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap])
+    
+    print('drawing dendrogram...')
+    Z1 = sch.dendrogram(Y, orientation='left',color_threshold=0.1*max(Y[:,2]))
+
+    #ax.set_xticks([])
+    ax.set_yticks([])
+    # Plot distance matrix.
+    fig2 = plt.figure(figsize=(16,16))
+    idx1 = Z1['leaves']
+    #idx2 = Z2['leaves']
+    
+    X2 = X[idx1]
+    
+    cluster_idxs = defaultdict(list)
+    _tmp_set=set()
+    cluster_list=[]
+    #print(Z1['color_list'])
+    for c, ic, dc in zip(Z1['color_list'], Z1['icoord'], Z1['dcoord']):
+        for l in [[0, 1], [3, 2]]:
+            if dc[l[0]]==0.0:
+                i = int((ic[l[1]] - 5.0) / 10.0)
+                if not i in _tmp_set:
+                    _tmp_set.add(i)
+                    cluster_list.append([i, c])
+                    cluster_idxs[c].append(i)
+                else:
+                    print(c, ic, dc)
+    cluster_list=sorted(cluster_list)
+    _color_list=[""]*len(yLabels)
+    if WRITE_CLUSTER:
+        assert save is not ""
+        with open(save+"_clusters_on_scatter_plot.txt", "w") as fo:
+            #for k, v in cluster_idxs.items():
+            klist=[]
+            m=0
+            for k, v in cluster_list:
+                #for _v in v:
+                    #print _v, idx1[_v], yLabels[idx1[_v]]
+                _pos=yLabels[idx1[k]]
+                #print(mpl.colors.hex2color(v))
+                _color_list[idx1[k]]=list(mpl.colors.hex2color(v))+[1.0]
+                if v=="b":
+                    fo.write(_pos+"\t"+v+"\n")
+                else:
+                    _key=",".join(map(str, hex_to_rgb(v)))
+                    if len(klist)==0:
+                        _c=";"+str(m)
+                        m+=1
+                    elif klist[-1] !=_key:
+                        _c=";"+str(m)
+                        m+=1
+                    fo.write(_pos+"\t"+_key+_c+"\n")
+                    klist.append(_key)
+               
+    
+    print("drawing scatter plot")
+    plt.scatter(embeddingX[:, 0],embeddingX[:,1], color=_color_list)
+    fig.savefig(save+"_dendro.png", format="png")
+    fig2.savefig(save+"_scatter.png", format="png")
+    if SHOW==True:
+        plt.show()
+
+
 if __name__=="__main__":
     b=np.random.normal(0,1, size=(25,25))
     for i in range(10):
         b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
+    np.random.shuffle(b)
+    
     heatmapper(b)
+    
+    
+    
+    
+    
