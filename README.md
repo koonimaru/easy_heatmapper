@@ -83,8 +83,8 @@ import numpy as np
 
 #creating noisy matrix
 b=np.random.normal(0,1, size=(25,25))
-    for i in range(10):
-        b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
+for i in range(10):
+	b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
 b[:]+=np.arange(25)/5.0
 np.random.shuffle(b)
 
@@ -99,8 +99,8 @@ import numpy as np
 
 #creating noisy matrix
 b=np.random.normal(0,1, size=(25,25))
-    for i in range(10):
-        b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
+for i in range(10):
+	b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
 b[:]+=np.arange(25)/5.0
 np.random.shuffle(b)
 
