@@ -22,7 +22,13 @@ def heatmapper(X, xLabels=[],yLabels=[],
                CPU=os.cpu_count()//2, 
                cluster_both=True, 
                SHOW=True,
-               COLOR='YlGnBu'):
+               COLOR='YlGnBu',
+               _spectral=18,
+               _n_neighbors=5,
+               _min_dist=0.1,
+               _perplexity=50,
+               _n_iter=5000,
+               _pca_comp=2):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
@@ -34,8 +40,9 @@ def heatmapper(X, xLabels=[],yLabels=[],
     """
     
     Xshape=np.shape(X)
-    
-    
+    assert(len(Xshape)==2)
+    pca_comp1=Xshape[1]
+    pca_comp2=Xshape[0]    
     
     if WRITE_CLUSTER:
         if len(yLabels)==0:
@@ -54,13 +61,13 @@ def heatmapper(X, xLabels=[],yLabels=[],
     if methods !="":
         print("reducing X axis dimension with "+methods)
         if methods=="umap":
-            embeddingX = umap.UMAP(n_neighbors=5,  min_dist=0.1, metric='euclidean', n_components=2).fit_transform(X)
+            embeddingX = umap.UMAP(n_neighbors=_n_neighbors,  min_dist=_min_dist, metric='euclidean', n_components=2).fit_transform(X)
         elif methods=="pca":
-            embeddingX = PCA(n_components=10).fit_transform(X)
+            embeddingX = PCA(n_components=_pca_comp).fit_transform(X)
         elif methods=="tsne":
             if CPU==0:
                 CPU=1
-            tsne = TSNE(n_jobs=CPU,perplexity = 40.000000,  n_iter=5000)
+            tsne = TSNE(n_jobs=CPU,perplexity = _perplexity,  n_iter=_n_iter)
             embeddingX = tsne.fit_transform(X)
     else:
         embeddingX=np.array(X)
@@ -68,7 +75,7 @@ def heatmapper(X, xLabels=[],yLabels=[],
     ax1 = fig.add_axes([0.09,0.1,0.2,0.8])
     print("calculating Y axis linkage")
     Y = fcl.linkage(embeddingX, method='ward', metric='euclidean')
-    cmap = cm.nipy_spectral(np.linspace(0, 1, 18))
+    cmap = cm.nipy_spectral(np.linspace(0, 1, _spectral))
     sch.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap])
     
     print('drawing dendrogram...')
@@ -80,11 +87,11 @@ def heatmapper(X, xLabels=[],yLabels=[],
             print("reducing Y axis dimension with "+methods)
             if methods=="umap":
                 
-                embeddingXt = umap.UMAP(n_neighbors=5,  min_dist=0.05, metric='euclidean', n_components=2).fit_transform(Xt)
+                embeddingXt = umap.UMAP(n_neighbors=_n_neighbors,  min_dist=_min_dist, metric='euclidean', n_components=2).fit_transform(Xt)
             elif methods=="pca":
-                embeddingXt = PCA(n_components=10).fit_transform(Xt)
+                embeddingXt = PCA(n_components=_pca_comp).fit_transform(Xt)
             elif methods=="tsne":
-                tsne = TSNE(n_jobs=8,perplexity = 40.000000,  n_iter=5000)
+                tsne = TSNE(n_jobs=CPU,perplexity = _perplexity,  n_iter=_n_iter)
                 embeddingXt = tsne.fit_transform(Xt)
         else:
             embeddingXt=Xt
@@ -94,7 +101,7 @@ def heatmapper(X, xLabels=[],yLabels=[],
         Y2 = fcl.linkage(embeddingXt, method='ward', metric='euclidean')
         
         print('drawing dendrogram...')
-        cmap2 = cm.nipy_spectral(np.linspace(0, 1, 20))
+        cmap2 = cm.nipy_spectral(np.linspace(0, 1, _spectral))
         sch.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap2])
         Z2 = sch.dendrogram(Y2, orientation='top',color_threshold=0.2*max(Y2[:,2]))
         idx2 = Z2['leaves']
@@ -238,7 +245,12 @@ def scatter(X, xLabels=[],yLabels=[],
                WRITE_CLUSTER=True, methods="tsne",
                CPU=os.cpu_count()//2, 
                SHOW=True,
-               COLOR='YlGnBu'):
+               COLOR='YlGnBu',
+               _spectral=18,
+               _n_neighbors=5,
+               _min_dist=0.1,
+               _perplexity=50,
+               _n_iter=5000):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
@@ -263,19 +275,19 @@ def scatter(X, xLabels=[],yLabels=[],
     # Compute and plot first dendrogram.
     print("reducing X axis dimension with "+methods)
     if methods=="umap":
-        embeddingX = umap.UMAP(n_neighbors=5,  min_dist=0.1, metric='euclidean', n_components=2).fit_transform(X)
+        embeddingX = umap.UMAP(n_neighbors=_n_neighbors,  min_dist=_min_dist, metric='euclidean', n_components=2).fit_transform(X)
     elif methods=="pca":
         embeddingX = PCA(n_components=2).fit_transform(X)
     elif methods=="tsne":
         if CPU==0:
             CPU=1
-        tsne = TSNE(n_jobs=CPU,perplexity = 40.000000,  n_iter=5000)
+        tsne = TSNE(n_jobs=CPU,perplexity = _perplexity,  n_iter=_n_iter)
         embeddingX = tsne.fit_transform(X)
  
     fig, ax  = plt.subplots(figsize=(8,8))
     print("calculating Y axis linkage")
     Y = fcl.linkage(embeddingX, method='ward', metric='euclidean')
-    cmap = cm.nipy_spectral(np.linspace(0, 1, 18))
+    cmap = cm.nipy_spectral(np.linspace(0, 1, _spectral))
     sch.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap])
     
     print('drawing dendrogram...')
@@ -334,6 +346,7 @@ def scatter(X, xLabels=[],yLabels=[],
     
     print("drawing scatter plot")
     plt.scatter(embeddingX[:, 0],embeddingX[:,1], color=_color_list)
+    #plt.scatter(X[:, 0],X[:,1], color=_color_list)
     fig.savefig(save+"_dendro.png", format="png")
     fig2.savefig(save+"_scatter.png", format="png")
     if SHOW==True:
@@ -341,13 +354,22 @@ def scatter(X, xLabels=[],yLabels=[],
 
 
 if __name__=="__main__":
-    b=np.random.normal(0,1, size=(25,25))
+    """
+    DIM=5
+    DIM2=5
+    b=np.random.normal(0,1, size=(DIM,DIM2))
     for i in range(10):
-        b=np.concatenate((b, np.random.normal(i+1, 1, size=(25,25) )), axis=0)
-    b[:]+=np.arange(25)/5.0
+        b=np.concatenate((b, np.random.normal(i/3.0, 1, size=(DIM,DIM2) )), axis=0)
+    b[:]+=np.random.randint(0,5, size=(DIM2))
     np.random.shuffle(b)
+    print(b)
+    """
+    from sklearn.datasets import load_iris
+    iris = load_iris()
+    X = iris.data
+    y = iris.target
     
-    scatter(b)
+    heatmapper(X, methods="tsne")
     
     
     
