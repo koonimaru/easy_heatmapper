@@ -1,8 +1,16 @@
 # easy_heatmapper
 A python module to create clustered heatmaps and output clusters.
 
-Install
--------
+Introduction
+------------
+easy_heatmapper is a python module to easily draw clustered heatmaps, clustered scatter plot and write cluster information in a text file. 
+
+To draw a heatmap, a function called "heatmapper" uses hierarchical clustering with euclidean distance and ward method. It can also apply PCA, t-SNE, UMAP to reduce the dimension of data before hierarchical clustering. 
+
+The module also include a scatter plot function to plot dimension-reduced data colored by automatically detected clusters with hierarchical clustering.
+
+Installation
+------------
 
 System-wide installation..
 
