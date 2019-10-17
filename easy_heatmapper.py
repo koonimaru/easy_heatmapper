@@ -40,7 +40,7 @@ def heatmapper(X, xLabels=[],yLabels=[],
     """
     
     Xshape=np.shape(X)
-    assert(len(Xshape)==2)
+    assert(len(Xshape)==2, "matrix must be two-dimensional")
     pca_comp1=Xshape[1]
     pca_comp2=Xshape[0]    
     
