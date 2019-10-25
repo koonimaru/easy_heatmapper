@@ -24,13 +24,15 @@ def heatmapper(X, xLabels=[],yLabels=[],
                CPU=os.cpu_count()//2, 
                cluster_both=True, 
                SHOW=True,
-               COLOR='YlGnBu',
+               tCOLOR='nipy_spectral',
+               hCOLOR="YlGnBu",
                _spectral=18,
                _n_neighbors=5,
                _min_dist=0.1,
                _perplexity=50,
                _n_iter=5000,
-               _pca_comp=2):
+               _pca_comp=2,
+               _color_threshold=0.1):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
@@ -40,7 +42,7 @@ def heatmapper(X, xLabels=[],yLabels=[],
     methods: "", "tsne", "umap", "pca". Dimension reduction methods to apply before hierarchical clustering.
     CPU: CPU number to use. It has effect only when tsne methods is used.
     """
-    
+    plt.rcParams.update({'font.size': 12})
     Xshape=np.shape(X)
     assert len(Xshape)==2, "matrix must be two-dimensional"
     pca_comp1=Xshape[1]
@@ -71,17 +73,20 @@ def heatmapper(X, xLabels=[],yLabels=[],
                 CPU=1
             tsne = TSNE(n_jobs=CPU,perplexity = _perplexity,  n_iter=_n_iter)
             embeddingX = tsne.fit_transform(X)
+        np.savez_compressed(save+"_heatmap_array.npz", X=embeddingX)
     else:
         embeddingX=np.array(X)
     fig = plt.figure(figsize=(8,20))
     ax1 = fig.add_axes([0.09,0.1,0.2,0.8])
     print("calculating Y axis linkage")
     Y = fcl.linkage(embeddingX, method='ward', metric='euclidean')
-    cmap = cm.nipy_spectral(np.linspace(0, 1, _spectral))
+    _cmap = cm.get_cmap(tCOLOR, _spectral)
+    cmap=_cmap(range(_spectral))
+    #cmap = cm.nipy_spectral(np.linspace(0, 1, _spectral))
     sch.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap])
     
     print('drawing dendrogram...')
-    Z1 = sch.dendrogram(Y, orientation='left',color_threshold=0.1*max(Y[:,2]))
+    Z1 = sch.dendrogram(Y, orientation='left',color_threshold=_color_threshold*max(Y[:,2]))
     if cluster_both:
         
         Xt=np.transpose(X)
@@ -103,9 +108,10 @@ def heatmapper(X, xLabels=[],yLabels=[],
         Y2 = fcl.linkage(embeddingXt, method='ward', metric='euclidean')
         
         print('drawing dendrogram...')
-        cmap2 = cm.nipy_spectral(np.linspace(0, 1, _spectral))
+        _cmap = cm.get_cmap(tCOLOR, _spectral)
+        cmap2=_cmap(range(_spectral))
         sch.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap2])
-        Z2 = sch.dendrogram(Y2, orientation='top',color_threshold=0.2*max(Y2[:,2]))
+        Z2 = sch.dendrogram(Y2, orientation='top',color_threshold=_color_threshold*max(Y2[:,2]))
         idx2 = Z2['leaves']
     ax1.set_xticks([])
     ax1.set_yticks([])
@@ -211,7 +217,7 @@ def heatmapper(X, xLabels=[],yLabels=[],
         
     sizes, colors, labels = zip(*sorted(zip(sizes, colors, labels), reverse=True))
     print("drawing heatmap")
-    im = axmatrix.imshow(X2, aspect='auto', origin='lower', cmap=COLOR)
+    im = axmatrix.imshow(X2, aspect='auto', origin='lower', cmap=hCOLOR)
     if len(xLabels)<=50:
         axmatrix.set_xticks(range(len(xLabels)))
         axmatrix.set_xticklabels(xLabels, rotation=90)
@@ -247,12 +253,13 @@ def scatter(X, xLabels=[],yLabels=[],
                WRITE_CLUSTER=True, methods="tsne",
                CPU=os.cpu_count()//2, 
                SHOW=True,
-               COLOR='YlGnBu',
+               COLOR='nipy_spectral',
                _spectral=18,
                _n_neighbors=5,
                _min_dist=0.1,
                _perplexity=50,
-               _n_iter=5000):
+               _n_iter=5000,
+               _color_threshold=0.1):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
@@ -264,7 +271,8 @@ def scatter(X, xLabels=[],yLabels=[],
     """
     
     Xshape=np.shape(X)
-    
+    yind=list(map(str, range(Xshape[0])))
+    plt.rcParams.update({'font.size': 12})
     
     
     if WRITE_CLUSTER:
@@ -275,32 +283,41 @@ def scatter(X, xLabels=[],yLabels=[],
            
     save=save+"_"+methods
     # Compute and plot first dendrogram.
-    print("reducing X axis dimension with "+methods)
-    if methods=="umap":
-        embeddingX = umap.UMAP(n_neighbors=_n_neighbors,  min_dist=_min_dist, metric='euclidean', n_components=2).fit_transform(X)
-    elif methods=="pca":
-        embeddingX = PCA(n_components=2).fit_transform(X)
-    elif methods=="tsne":
-        if CPU==0:
-            CPU=1
-        tsne = TSNE(n_jobs=CPU,perplexity = _perplexity,  n_iter=_n_iter)
-        embeddingX = tsne.fit_transform(X)
-    elif methods=="":
-        assert Xshape[1]==2, "if methods=='', then the dimension of the matrix must be N x 2."
+    if not methods=="":
+        print("reducing X axis dimension with "+methods)
+        if methods=="umap":
+            embeddingX = umap.UMAP(n_neighbors=_n_neighbors,  min_dist=_min_dist, metric='euclidean', n_components=2).fit_transform(X)
+        elif methods=="pca":
+            embeddingX = PCA(n_components=2).fit_transform(X)
+        elif methods=="tsne":
+            if CPU==0:
+                CPU=1
+            tsne = TSNE(n_jobs=CPU,perplexity = _perplexity,  n_iter=_n_iter)
+            embeddingX = tsne.fit_transform(X)
+        else:
+            sys.exit("methods options can only accept umap, pca, tsne or ''.")
+        np.savez_compressed(save+"_scatter_array.npz", X=embeddingX)
+    else:
+        assert Xshape[1]==2, "if methods is '', then the shape of the matrix must be N x 2."
         embeddingX=X
     fig, ax  = plt.subplots(figsize=(8,8))
+    
     print("calculating Y axis linkage")
     Y = fcl.linkage(embeddingX, method='ward', metric='euclidean')
-    cmap = cm.nipy_spectral(np.linspace(0, 1, _spectral))
+    _cmap = cm.get_cmap(COLOR, _spectral)
+    cmap=_cmap(range(_spectral))
     sch.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap])
     
     print('drawing dendrogram...')
-    Z1 = sch.dendrogram(Y, orientation='left',color_threshold=0.1*max(Y[:,2]))
+    Z1 = sch.dendrogram(Y, orientation='left',color_threshold=_color_threshold*max(Y[:,2]))
 
     #ax.set_xticks([])
     ax.set_yticks([])
+    ax.set_title('Hierarchical clustering ')
+    
+    
     # Plot distance matrix.
-    fig2 = plt.figure(figsize=(16,16))
+    fig2, ax2  = plt.subplots(figsize=(8,8))
     idx1 = Z1['leaves']
     #idx2 = Z2['leaves']
     
@@ -321,6 +338,7 @@ def scatter(X, xLabels=[],yLabels=[],
                 else:
                     print(c, ic, dc)
     cluster_list=sorted(cluster_list)
+    #print("sample num: "+str(Xshape[0])+"\ncluster_list: "+str(len(cluster_list)))
     _color_list=[""]*len(yLabels)
     if WRITE_CLUSTER:
         assert save is not ""
@@ -331,11 +349,12 @@ def scatter(X, xLabels=[],yLabels=[],
             for k, v in cluster_list:
                 #for _v in v:
                     #print _v, idx1[_v], yLabels[idx1[_v]]
-                _pos=yLabels[idx1[k]]
+                _pos=str(yLabels[idx1[k]])
+                _ind=str(yind[idx1[k]])
                 #print(mpl.colors.hex2color(v))
                 _color_list[idx1[k]]=list(mpl.colors.hex2color(v))+[1.0]
                 if v=="b":
-                    fo.write(_pos+"\t"+v+"\n")
+                    fo.write(_ind+"\t"+_pos+"\t"+v+"\n")
                 else:
                     _key=",".join(map(str, hex_to_rgb(v)))
                     if len(klist)==0:
@@ -344,12 +363,17 @@ def scatter(X, xLabels=[],yLabels=[],
                     elif klist[-1] !=_key:
                         _c=";"+str(m)
                         m+=1
-                    fo.write(_pos+"\t"+_key+_c+"\n")
+                    fo.write(_ind+"\t"+_pos+"\t"+_key+_c+"\n")
                     klist.append(_key)
-               
+    else:
+        for k, v in cluster_list:
+            
+            _color_list[idx1[k]]=list(mpl.colors.hex2color(v))+[1.0]
     
     print("drawing scatter plot")
+    
     plt.scatter(embeddingX[:, 0],embeddingX[:,1], color=_color_list)
+    ax2.set_title('Scatter plot colored by clusters')
     #plt.scatter(X[:, 0],X[:,1], color=_color_list)
     fig.savefig(save+"_dendro.png", format="png")
     fig2.savefig(save+"_scatter.png", format="png")
@@ -372,8 +396,8 @@ if __name__=="__main__":
     iris = load_iris()
     X = iris.data
     y = iris.target
-    
-    heatmapper(X, methods="tsne")
+    #print(y)
+    scatter(X, methods="umap",yLabels=y)
     
     
     
