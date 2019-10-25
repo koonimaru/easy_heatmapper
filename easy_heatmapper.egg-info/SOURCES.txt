@@ -1,0 +1,8 @@
+README.md
+easy_heatmapper.py
+setup.py
+easy_heatmapper.egg-info/PKG-INFO
+easy_heatmapper.egg-info/SOURCES.txt
+easy_heatmapper.egg-info/dependency_links.txt
+easy_heatmapper.egg-info/requires.txt
+easy_heatmapper.egg-info/top_level.txt

@@ -1,8 +1,7 @@
 numpy
 matplotlib
-scipy
 sklearn
 fastcluster
-umap
+umap-learn
+scipy
 MulticoreTSNE
-tornado
