@@ -66,6 +66,6 @@ setup(
         
     
     ],
-    install_requires=[ 'numpy', 'matplotlib', 'sklearn', 'fastcluster', 'umap-learn', 'scipy', 'MulticoreTSNE'],
+    install_requires=[ 'numpy', 'matplotlib', 'sklearn', 'fastcluster', 'umap-learn', 'scipy', 'MulticoreTSNE','tornado'],
     long_description=open('README.md').read(),
 )

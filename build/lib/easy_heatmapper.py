@@ -1,5 +1,3 @@
-import matplotlib as mpl
-mpl.use("WebAgg")
 import numpy as np
 import matplotlib.pyplot as plt
 import pylab
