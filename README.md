@@ -3,7 +3,7 @@ A python module to create clustered heatmaps and output clusters.
 
 Introduction
 ------------
-easy_heatmapper is a python module to easily draw clustered heatmaps, clustered scatter plot and write cluster information in a text file. 
+easy_heatmapper is a python module to easily draw clustered heatmaps, clustered scatter plot and write cluster information in a text file.
 
 To draw a heatmap, a function called "heatmapper" uses hierarchical clustering with euclidean distance and ward method. It can also apply PCA, t-SNE, UMAP to reduce the dimension of data before hierarchical clustering. 
 
@@ -61,7 +61,7 @@ SHOW: If True, show a heatmap in runtime.
 &nbsp;
 
 
-**easy_heatmapper.scatter(X,yLabels=[], save=, WRITE_CLUSTER=True, methods="tsne",CPU=, SHOW=True)**
+**easy_heatmapper.scatter(X,yLabels=[], save=, WRITE_CLUSTER=True, methods="tsne",CPU=os.cpu_count()//2, SHOW=True, COLOR='nipy_spectral', _spectral=18,_n_neighbors=5, _min_dist=0.1, _perplexity=50, _n_iter=5000, _color_threshold=0.1)**
 
 X: M x N array.
 
@@ -69,17 +69,21 @@ xLabels: N array. The labels/names of data X by column.
 
 yLabels: M array. The labels/names of data X by row.
 
-save: a saving directory with a prefix, e.g., "/home/foo/test". Default is a current directory. If you set as "", no files will be saved.
+save: a saving directory with a prefix, e.g., "/home/foo/test". Default is a current directory. If you set as "", no files will be saved. 
 
 WRITE_CLUSTER: True or False. Choose if cluster information is output or not. Default=True.
 
-methods: "", "tsne", "umap", "pca". Dimension reduction methods to apply before hierarchical clustering.
+methods: Takes "", "tsne", "umap", "pca". Dimension reduction methods to apply before hierarchical clustering.
 
-CPU: CPU number to use. It has effect only when tsne methods is used.
+CPU: CPU number to use. It has effect only when tsne methods is used. Default is half of available CPUs.
 
-cluster_both: If True, cluster both x and y axis of data.
+cluster_both: True or False. If True, cluster both x and y axis of data. Default=True.
 
-SHOW: If True, show a heatmap in runtime.
+SHOW: True or False. If True, show a heatmap in runtime. Default=True.
+
+COLOR: Takes the name of matlab colormaps.
+
+_spectral: Takes an integer. the number of colors to use. If you see different clusters with a same color, increase this number.
 
 
 Example
