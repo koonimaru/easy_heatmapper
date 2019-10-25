@@ -285,7 +285,9 @@ def scatter(X, xLabels=[],yLabels=[],
             CPU=1
         tsne = TSNE(n_jobs=CPU,perplexity = _perplexity,  n_iter=_n_iter)
         embeddingX = tsne.fit_transform(X)
- 
+    elif methods=="":
+        assert Xshape[1]==2, "if methods=='', then the dimension of the matrix must be N x 2."
+        embeddingX=X
     fig, ax  = plt.subplots(figsize=(8,8))
     print("calculating Y axis linkage")
     Y = fcl.linkage(embeddingX, method='ward', metric='euclidean')
