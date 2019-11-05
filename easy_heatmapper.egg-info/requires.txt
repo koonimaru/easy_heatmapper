@@ -1,7 +1,0 @@
-numpy
-matplotlib
-sklearn
-fastcluster
-umap-learn
-scipy
-MulticoreTSNE

@@ -283,7 +283,7 @@ def scatter(X, xLabels=[],yLabels=[],
            
     save=save+"_"+methods
     # Compute and plot first dendrogram.
-    if not methods=="":
+    if methods !="":
         print("reducing X axis dimension with "+methods)
         if methods=="umap":
             embeddingX = umap.UMAP(n_neighbors=_n_neighbors,  min_dist=_min_dist, metric='euclidean', n_components=2).fit_transform(X)
@@ -298,7 +298,9 @@ def scatter(X, xLabels=[],yLabels=[],
             sys.exit("methods options can only accept umap, pca, tsne or ''.")
         np.savez_compressed(save+"_scatter_array.npz", X=embeddingX)
     else:
-        assert Xshape[1]==2, "if methods is '', then the shape of the matrix must be N x 2."
+        print("skipping dimensionality reduction")
+        if Xshape[1]!=2:
+            sys.exit("if methods is '', then the shape of the matrix must be N x 2.")
         embeddingX=X
     fig, ax  = plt.subplots(figsize=(8,8))
     
@@ -397,7 +399,8 @@ if __name__=="__main__":
     X = iris.data
     y = iris.target
     #print(y)
-    scatter(X, methods="umap",yLabels=y)
+    X=np.random.normal(0,1, size=(5,2))
+    scatter(X, methods="")
     
     
     

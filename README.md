@@ -38,7 +38,7 @@ will create a random heatmapper.
 Usage
 -----
 
-**easy_heatmapper.heatmapper(X, xLabels=[],yLabels=[], save=, WRITE_CLUSTER=True, methods="tsne",CPU=, cluster_both=True, SHOW=True)**
+**easy_heatmapper.heatmapper(X, xLabels=[],yLabels=[], save=, WRITE_CLUSTER=True, methods="tsne",CPU=, cluster_both=True, SHOW=True, tCOLOR='nipy_spectral', hCOLOR="YlGnBu", _spectral=18, _n_neighbors=5, _min_dist=0.1, _perplexity=50, _n_iter=5000, _pca_comp=2, _color_threshold=0.1)**
 
 X: M x N array.
 
@@ -54,9 +54,17 @@ methods: "", "tsne", "umap", "pca". Dimension reduction methods to apply before 
 
 CPU: CPU number to use. It has effect only when tsne methods is used.
 
-cluster_both: If True, cluster both x and y axis of data.
+cluster_both: True or False. If True, cluster both x and y axis of data.
 
-SHOW: If True, show a heatmap in runtime.
+SHOW: True or False. If True, show a heatmap in runtime.
+
+tCOLOR: Takes the name of matlab colormaps. It sets the colors of clusters in a dendrogram. Default: 'nipy_spectral'.
+
+hCOLOR: Takes the name of matlab colormaps. It sets the colors of clusters in a heatmap. Default: "YlGnBu".
+
+_spectral: Takes an integer. The number of colors to use. If you see different clusters with a same color, increase this number. Default: 18.
+
+_color_threshold: Takes a float number from 0.0 to 1.0. 
 
 &nbsp;
 
@@ -81,7 +89,7 @@ cluster_both: True or False. If True, cluster both x and y axis of data. Default
 
 SHOW: True or False. If True, show a heatmap in runtime. Default=True.
 
-COLOR: Takes the name of matlab colormaps.
+COLOR: Takes the name of matlab colormaps. It sets the colors of clusters. Default: 'nipy_spectral'.
 
 _spectral: Takes an integer. the number of colors to use. If you see different clusters with a same color, increase this number.
 
@@ -121,3 +129,13 @@ eh.scatter(b)
 ~~~
 
 ![scatter](tsne_with_color.png)
+
+~~~python
+from sklearn.datasets import load_iris
+import easy_heatmapper as eh
+iris = load_iris()
+X = iris.data
+y = iris.target
+eh.scatter(X, methods="umap",yLabels=y)
+~~~
+![scatter](_umap_scatter.png)
