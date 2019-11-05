@@ -259,7 +259,8 @@ def scatter(X, xLabels=[],yLabels=[],
                _min_dist=0.1,
                _perplexity=50,
                _n_iter=5000,
-               _color_threshold=0.1):
+               _color_threshold=0.1,
+               s=0.5**2):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
@@ -374,7 +375,7 @@ def scatter(X, xLabels=[],yLabels=[],
     
     print("drawing scatter plot")
     
-    plt.scatter(embeddingX[:, 0],embeddingX[:,1], color=_color_list)
+    plt.scatter(embeddingX[:, 0],embeddingX[:,1], color=_color_list,s=s)
     ax2.set_title('Scatter plot colored by clusters')
     #plt.scatter(X[:, 0],X[:,1], color=_color_list)
     fig.savefig(save+"_dendro.png", format="png")
