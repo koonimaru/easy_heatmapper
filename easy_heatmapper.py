@@ -247,7 +247,8 @@ def heatmapper(X, xLabels=[],yLabels=[],
         fig2.savefig(save+"_pie.pdf", format="pdf")
     if SHOW==True:
         plt.show()
-
+    else:
+        plt.close("all")
 def scatter(X, xLabels=[],yLabels=[], 
                save= os.getcwd()+os.path.sep, 
                WRITE_CLUSTER=True, methods="tsne",
@@ -260,7 +261,8 @@ def scatter(X, xLabels=[],yLabels=[],
                _perplexity=50,
                _n_iter=5000,
                _color_threshold=0.1,
-               s=0.5**2):
+               s=2**2,
+               XX=np.array([]), color_by_value=np.array([])):
     """  
     X: M x N array.
     xLabels: N array. The labels or names of data X by column.  
@@ -374,7 +376,11 @@ def scatter(X, xLabels=[],yLabels=[],
             _color_list[idx1[k]]=list(mpl.colors.hex2color(v))+[1.0]
     
     print("drawing scatter plot")
-    
+    if np.size(color_by_value)>0:
+        fig3, ax3  = plt.subplots(figsize=(8,8))
+        ax3.scatter(embeddingX[:, 0],embeddingX[:,1], c=color_by_value,s=s)
+        fig3.savefig(save+"_scatter_goi.png", format="png")
+        
     plt.scatter(embeddingX[:, 0],embeddingX[:,1], color=_color_list,s=s)
     ax2.set_title('Scatter plot colored by clusters')
     #plt.scatter(X[:, 0],X[:,1], color=_color_list)
@@ -382,7 +388,8 @@ def scatter(X, xLabels=[],yLabels=[],
     fig2.savefig(save+"_scatter.png", format="png")
     if SHOW==True:
         plt.show()
-
+    else:
+        plt.close("all")
 
 if __name__=="__main__":
     """
